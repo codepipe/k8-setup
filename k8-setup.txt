@@ -1,0 +1,51 @@
+Steps to setup K8-cluster in ubuntu Flavour
+initial 
+yum or apt update
+swapoff -a
+sestatus
+
+
+1. sudo apt-get update
+
+2. sudo hostnamectl set-hostname k8master
+       sudo hostnamectl set-hostname k8node1
+       sudo hostnamectl set-hostname k8node2
+
+  3.  curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
+          Or 
+       curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+
+  4.  sudo apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
+         Or  
+      sudo apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
+  
+  5.  sudo apt-get update
+
+  6.  sudo apt-get install -y docker.io kubelet kubeadm kubectl kubernetes-cni 
+
+  7. sudo swapoff -a
+
+  8. sudo kubeadm init --apiserver-advertise-address **PROVIDE IP ADDRESS HERE** --pod-network-cidr=192.168.0.0/16
+      Or
+      sudo kubeadm init --pod-network-cidr=10.244.0.0/16
+  
+Network:
+=======
+calico, weave and flannel
+
+  9.0.  kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+
+
+  9. export kubever=$(kubectl version | base64 | tr -d '\n')
+
+  10. kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$kubever"
+
+
+ 11.  mkdir -p $HOME/.kube
+       sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+       sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+
+in worker nodes
+======
+apt install kubelet kubeadm kubectl kubernetes-cni
