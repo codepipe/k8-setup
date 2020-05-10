@@ -1,5 +1,13 @@
 Steps to setup K8-cluster in ubuntu Flavour
-initial 
+==========================================
+initially check this:
+===================
+go to vim /etc/hosts
+
+ 0.0.0.0 k8.master.com k8master
+ 1.1.1.1 k8.master.com k8node1
+ 2.2.2.2. k8.master.com k8node2
+ 
 yum or apt update
 swapoff -a
 sestatus
