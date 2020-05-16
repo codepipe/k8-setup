@@ -13,6 +13,8 @@ swapoff -a
 sestatus
 
 
+
+
 1. sudo apt-get update
 
 2. sudo hostnamectl set-hostname k8master
@@ -36,6 +38,8 @@ sestatus
   8. sudo kubeadm init --apiserver-advertise-address **PROVIDE IP ADDRESS HERE** --pod-network-cidr=192.168.0.0/16
       Or
       sudo kubeadm init --pod-network-cidr=10.244.0.0/16
+
+***********Environment="cgroup-driver=systemd/cgroup-driver=cgroupfs"
   
 Network:
 =======
