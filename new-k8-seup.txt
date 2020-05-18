@@ -1,0 +1,99 @@
+Steps to setup K8-cluster in ubuntu Flavour (combination of worker nodes and master node is called as Kubernetes cluster)
+========================================================================================================================
+Initially check this and add the all 3 nodes
+============================================
+
+kubectl commands should only run in master node, not in worker nodes
+====================================================================
+
+
+
+1. sudo hostnamectl set-hostname k8master
+   Sudo hostnamectl set-hostname k8node1
+   Sudo hostnamectl set-hostname k8node2
+
+
+2. go to vim /etc/hosts 
+
+ 0.0.0.0 k8.master.com k8master
+ 1.1.1.1 k8.master.com k8node1
+ 2.2.2.2. k8.master.com k8node2.
+
+This step because all the 3 nodes should communicate each other.
+ 
+3. Pinging should do work and Enable ICMP V4 
+
+4. Firewalld package should be installed in AWS Ubuntu OS, and Disabled.
+   
+   Sudo apt install firewalld
+   Sudo systemctl status firewall
+   Sudo systemctl stop firewall
+
+5. SWAP memory will not support for K8, because cache memory will not required.
+
+   sudo Free -m
+   sudo Swappoff -a
+
+6. SeLinux is disabled 
+   sudo Sestatus
+   sudo setenforce 0
+   sudo Sestatus
+
+
+7. sudo apt-get update && sudo apt-get install -y apt-transport-https curl
+
+8. curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+
+9. sudo apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
+
+10. Sudo apt update
+
+11. Install docker and enable the services in all 3 nodes
+    Sudo apt install docker.io
+    Sudo systemctl start docker
+    Sudo systemctl enable docker
+
+12. Install the Kubeadm, kubelet , kubectl  in all 3 nodes
+    
+   sudo apt-get install -y kubelet kubeadm kubectl 
+   
+13. Check the version kubeadm
+
+14. Start the kubelet and enable the services of kubelet
+    Sudo systemctl start kubelet
+    Sudo systemctl enable kubelet
+
+
+Only in Master node-Run the following commands and network add ons plugins in master node only.
+================================================================================================
+
+15. Add the environemnt details for Cgroup of dockers and kubelet for systems in a file kubernetes environmental file only in master node
+    
+    Environment="cgroup-driver=systemd/cgroup-driver=cgroupfs"
+
+
+
+16. sudo kubeadm init --apiserver-advertise-address **PROVIDE IP ADDRESS of master node** --pod-network-cidr=192.168.0.0/16
+       Or
+      sudo kubeadm init --pod-network-cidr=10.244.0.0/16
+
+17. kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+
+
+18.  mkdir -p $HOME/.kube
+       sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+       sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+19. Run kubectl get nodes. To verify all the 3 nodes are active or not.
+
+20. Kubectl get pods --all-namespaces
+
+21. Save the Generated token, with this token we have to join the worker nodes to master node
+
+
+In worker nodes
+===============
+
+1. 1 to 14 steps should run
+
+2. kubeadm join generated token in master node.
