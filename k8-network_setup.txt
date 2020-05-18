@@ -1,0 +1,30 @@
+THis is for only for calico network addons 
+
+not required these steps all ready done in kubeadm init
+=======================================================
+sudo kubeadm init --pod-network-cidr=192.168.0.0/16
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+
+
+This is impportant
+==================
+kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+
+
+Run this command whethere it is installed network or not
+========================================================
+kubectl get pods --all-namespaces
+
+[[ kubectl taint nodes --all node-role.kubernetes.io/master-
+answer is :  node/<your-hostname> untainted ]]
+
+kubectl get nodes
+
+For calico link:
+================
+https://docs.projectcalico.org/getting-started/kubernetes/quickstart
+
+
