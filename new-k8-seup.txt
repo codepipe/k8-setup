@@ -90,6 +90,8 @@ Only in Master node-Run the following commands and network add ons plugins in ma
 20. Kubectl get pods --all-namespaces
 
 21. Save the Generated token, with this token we have to join the worker nodes to master node
+   example:  kubeadm join 172.31.45.220:6443 --token 4dpaz7.1d4qr7d06m46ta2n     --discovery-token-ca-cert-hash       sha256:94d0de44045b5a94507a3586ff68532fc7da62f45841c72d22622dbc9a5d23be 
+
 
 
 In worker nodes
