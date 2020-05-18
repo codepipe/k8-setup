@@ -1,63 +1,132 @@
-Steps to setup K8-cluster in ubuntu Flavour
-==========================================
-initially check this:
-===================
-go to vim /etc/hosts
 
- 0.0.0.0 k8.master.com k8master
- 1.1.1.1 k8.master.com k8node1
- 2.2.2.2. k8.master.com k8node2
- 
-yum or apt update
-swapoff -a
-sestatus
-
-
-
-
-1. sudo apt-get update
-
-2. sudo hostnamectl set-hostname k8master
-       sudo hostnamectl set-hostname k8node1
-       sudo hostnamectl set-hostname k8node2
-
-  3.  curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add
-          Or 
-       curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
-
-  4.  sudo apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
-         Or  
-      sudo apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
   
-  5.  sudo apt-get update
+Steps to setup K8-cluster in centos Flavour (combination of worker nodes and master node is called as Kubernetes cluster)
+========================================================================================================================
+Initially check this and add the all 3 nodes
+============================================
 
-  6.  sudo apt-get install -y docker.io kubelet kubeadm kubectl kubernetes-cni 
+kubectl commands should only run in master node, not in worker nodes
+====================================================================
 
-  7. sudo swapoff -a
 
-  8. sudo kubeadm init --apiserver-advertise-address **PROVIDE IP ADDRESS HERE** --pod-network-cidr=192.168.0.0/16
-      Or
+
+1. sudo hostnamectl set-hostname k8master after this run this command sudo exec bash (run only in master node)
+   Sudo hostnamectl set-hostname k8node1. after this run this command sudo exec bash. (run only in worker node1)
+   Sudo hostnamectl set-hostname k8node2. after this run this command sudo exec bash. (run only in worker node2
+   
+
+
+2. go to vim /etc/hosts and add this in each node all 3 sub steps
+
+example:  0.0.0.0       k8master.gonext.com       k8master
+example:  1.1.1.1       k8node1.gonext.com       k8node1
+example:  2.2.2.2.      k8node2.gonext.com       k8node2
+
+This step because all the 3 nodes should communicate each other.
+ 
+3. Pinging should do work and Enable ICMP V4 
+
+4. Firewalld package should be installed in AWS Ubuntu OS, and Disabled.
+   
+
+   Sudo systemctl status firewalld
+   Sudo systemctl stop firewalld
+
+5. SWAP memory will not support for K8, because cache memory will not required.
+
+   sudo Free -m
+   sudo Swappoff -a
+
+6. SeLinux is disabled 
+   sudo Sestatus
+   sudo setenforce 0
+   sudo Sestatus
+
+# setenforce 0
+# sed -i --follow-symlinks 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux
+# echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables
+  modprobe br_netfilter
+  cho '1' > /proc/sys/net/bridge/bridge-nf-call-iptables
+
+*****
+
+cat <<EOF > /etc/yum.repos.d/kubernetes.repo
+[kubernetes]
+name=Kubernetes
+baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-\$basearch
+enabled=1
+gpgcheck=1
+repo_gpgcheck=1
+gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+exclude=kubelet kubeadm kubectl
+EOF
+
+******
+
+# firewall-cmd --permanent --add-port=6783/tcp
+# firewall-cmd --permanent --add-port=10250/tcp
+# firewall-cmd --permanent --add-port=10255/tcp
+# firewall-cmd --permanent --add-port=30000-32767/tcp
+# firewall-cmd  --reload
+
+
+11. Install docker and enable the services in all 3 nodes
+    Sudo yum install docker.io
+    Sudo systemctl start docker
+    Sudo systemctl enable docker
+
+12. Install the Kubeadm, kubelet , kubectl  in all 3 nodes
+    
+   sudo yum install -y kubelet kubeadm kubectl
+   
+   ##sed -i 's/cgroup-driver=systemd/cgroup-driver=cgroupfs/g' /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
+   
+13. Check the version kubeadm
+
+14. Start the kubelet and enable the services of kubelet
+    Sudo systemctl start kubelet
+    Sudo systemctl enable kubelet
+    
+    
+
+
+Only in Master node-Run the following commands and network add ons plugins in master node only.
+================================================================================================
+
+#15. Add the environemnt details for Cgroup of dockers and kubelet for systems in a file kubernetes environmental file only in #master node
+#file name: 10.kubeadm.conf 
+#path is: /etc/systemd/system/kubelet.service.d/10.kubeadm.conf
+    
+    #Environment="cgroup-driver=systemd/cgroup-driver=cgroupfs"
+    
+    systemctl restart docker && systemctl enable docker
+     systemctl  restart kubelet && systemctl enable kubelet
+     
+    
+
+
+
+16. sudo kubeadm init --apiserver-advertise-address **PROVIDE IP ADDRESS of master node** --pod-network-cidr=192.168.0.0/16
+       Or
       sudo kubeadm init --pod-network-cidr=10.244.0.0/16
 
-***********Environment="cgroup-driver=systemd/cgroup-driver=cgroupfs"
-  
-Network:
-=======
-calico, weave and flannel
-
-  9.0.  kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+17. kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 
 
-  9. export kubever=$(kubectl version | base64 | tr -d '\n')
+18.  mkdir -p $HOME/.kube
+     sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+     sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
-  10. kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$kubever"
+19. Run kubectl get nodes. To verify all the 3 nodes are active or not.
 
+20. Kubectl get pods --all-namespaces
 
- 11.  mkdir -p $HOME/.kube
-       sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-       sudo chown $(id -u):$(id -g) $HOME/.kube/config
-
-
-in worker nodes
-======
-apt install kubelet kubeadm kubectl kubernetes-cni
+21. Save the Generated token, with this token we have to join the worker nodes to master node
+   example:  kubeadm join 172.31.45.220:6443 --token 4dpaz7.1d4qr7d06m46ta2n     --discovery-token-ca-cert-hash       sha256:94d0de44045b5a94507a3586ff68532fc7da62f45841c72d22622dbc9a5d23be
+   
+   
+   
+   
+   
+   https://phoenixnap.com/kb/how-to-install-kubernetes-on-centos
+   https://www.tecmint.com/install-kubernetes-cluster-on-centos-7/
