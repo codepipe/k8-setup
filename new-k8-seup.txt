@@ -100,3 +100,60 @@ In worker nodes
 1. 1 to 14 steps should run
 
 2. kubeadm join generated token in master node.
+
+
+
+Port numbers for master node and worker node details:
+=====================================================
+In master node these port numbers should be allowed
+====================================================
+
+Protocol	Direction	Port Range	Purpose	              Used By
+==============================================================================
+TCP	        Inbound	          6443*	     Kubernetes API server	All
+TCP	        Inbound           2379-2380  etcd server client API	kube-apiserver, etcd
+TCP	        Inbound	          10250	     Kubelet API	        Self, Control plane
+TCP	        Inbound	          10251	    kube-scheduler	        Self
+TCP	        Inbound	          10252	    kube-controller-manager	Self
+
+
+In worker node these port numbers should be allowed
+=====================================================
+Protocol	Direction	Port Range	Purpose	              Used By
+==============================================================================
+TCP	        Inbound	        10250	        Kubelet API	        Self, Control plane
+TCP	        Inbound	        30000-32767	NodePort Services†	All
+
+
+
+
+Required Port numbers in master node for Kubernetes cluster only in Master node
+===============================================================================
+firewall-cmd --permanent --add-port=6443/tcp
+firewall-cmd --permanent --add-port=2379-2380/tcp
+firewall-cmd --permanent --add-port=10250/tcp
+firewall-cmd --permanent --add-port=10251/tcp
+firewall-cmd --permanent --add-port=10252/tcp
+firewall-cmd --permanent --add-port=10255/tcp
+firewall-cmd --reload
+And additional port numbers if required
+
+8080
+8081
+8082
+8443
+9090
+
+
+
+Required Port numbers for only  in worker nodes
+========================================
+Enable the port numbers range from 
+30000-32767
+
+firewall-cmd --permanent --add-port=10255/tcp
+firewall-cmd --permanent --add-port=130000/tcp
+
+To
+firewall-cmd --permanent --add-port=32767/tcp
+firewall-cmd --reload
