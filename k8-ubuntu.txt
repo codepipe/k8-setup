@@ -157,3 +157,8 @@ firewall-cmd --permanent --add-port=130000/tcp
 To
 firewall-cmd --permanent --add-port=32767/tcp
 firewall-cmd --reload
+
+
+
+https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#control-plane-nodes
+https://kubernetes.io/docs/concepts/services-networking/service/
