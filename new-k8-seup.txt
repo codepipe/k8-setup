@@ -11,6 +11,7 @@ kubectl commands should only run in master node, not in worker nodes
 1. sudo hostnamectl set-hostname k8master
    Sudo hostnamectl set-hostname k8node1
    Sudo hostnamectl set-hostname k8node2
+   sudo exec bash
 
 
 2. go to vim /etc/hosts 
