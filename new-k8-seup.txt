@@ -17,8 +17,8 @@ kubectl commands should only run in master node, not in worker nodes
 2. go to vim /etc/hosts and add this in each node all 3 sub steps
 
 example:  0.0.0.0       k8master.gonext.com       k8master
-example:  1.1.1.1       k8master.gonext.com       k8master
-example:  2.2.2.2.      k8master.gonext.com       k8master
+example:  1.1.1.1       k8node1.gonext.com       k8node1
+example:  2.2.2.2.      k8node2.gonext.com       k8node2
 
 This step because all the 3 nodes should communicate each other.
  
