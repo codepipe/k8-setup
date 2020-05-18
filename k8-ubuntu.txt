@@ -69,6 +69,8 @@ Only in Master node-Run the following commands and network add ons plugins in ma
 ================================================================================================
 
 15. Add the environemnt details for Cgroup of dockers and kubelet for systems in a file kubernetes environmental file only in master node
+file name: 10.kubeadm.conf 
+path is: /etc/systemd/system/kubelet.service.d/10.kubeadm.conf
     
     Environment="cgroup-driver=systemd/cgroup-driver=cgroupfs"
 
@@ -82,8 +84,8 @@ Only in Master node-Run the following commands and network add ons plugins in ma
 
 
 18.  mkdir -p $HOME/.kube
-       sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-       sudo chown $(id -u):$(id -g) $HOME/.kube/config
+     sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+     sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
 19. Run kubectl get nodes. To verify all the 3 nodes are active or not.
 
@@ -160,5 +162,9 @@ firewall-cmd --reload
 
 
 
-https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#control-plane-nodes
-https://kubernetes.io/docs/concepts/services-networking/service/
+for installation:
+     https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/#control-plane-nodes
+for services:
+     https://kubernetes.io/docs/concepts/services-networking/service/
+for network add ons: 
+     https://kubernetes.io/docs/concepts/cluster-administration/addons/
