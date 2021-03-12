@@ -1,0 +1,31 @@
+yum install haproxy -y or keepalived
+sudo systemctl status haproxy
+systemctl status friewalld
+
+
+
+
+
+#---------------------------------------------------------------------
+# round robin balancing between the various backends
+#---------------------------------------------------------------------
+backend app
+    balance     roundrobin
+    server  app1 127.0.0.1:5001 check
+    server  app2 127.0.0.1:5002 check
+    server  app3 127.0.0.1:5003 check
+    server  app4 127.0.0.1:5004 check
+
+
+frontend kubernetes-frontend
+    bind 10.46.176.149:6443
+    mode tcp
+    option tcplog
+    default_backend kubernetes-backend
+
+backend kubernetes-backend
+    mode tcp
+    option tcp-check
+    balance roundrobin
+    server k8ha-master1-146 10.46.176.146:6443 check fall 3 rise 2
+    server k8ha-master2-160 10.46.176.160:6443 check fall 3 rise 2
