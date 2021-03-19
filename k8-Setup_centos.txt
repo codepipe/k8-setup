@@ -1,4 +1,4 @@
-
+kubeadm init --apiserver-advertise-address=10.46.176.28 --pod-network-cidr=192.168.1.0/16
   
 Steps to setup K8-cluster in centos Flavour (combination of worker nodes and master node is called as Kubernetes cluster)
 ========================================================================================================================
