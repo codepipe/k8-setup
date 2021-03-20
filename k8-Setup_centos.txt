@@ -1,4 +1,4 @@
-kubeadm init --apiserver-advertise-address=10.46.176.28 --pod-network-cidr=192.168.1.0/16
+
   
 Steps to setup K8-cluster in centos Flavour (combination of worker nodes and master node is called as Kubernetes cluster)
 ========================================================================================================================
@@ -29,6 +29,12 @@ This step because all the 3 nodes should communicate each other.
 
 important:
 
+create a filename with firewall.sh
+and add the line no 35 to 57 inside the file
+and run the firewall.sh file 
+with following command 
+bash firewall.sh
+
 #!/bin/bash
 set -x
 firewall-cmd --permanent --add-port=6443/tcp
@@ -56,16 +62,6 @@ set +x
 
 iptables -w -P FORWARD ACCEPT
 
-cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf
-br_netfilter
-EOF
-
-cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
-net.bridge.bridge-nf-call-ip6tables = 1
-net.bridge.bridge-nf-call-iptables = 1
-EOF
-sudo sysctl --system
-
 modprobe overlay
 modprobe br_netfilter
 tee /etc/sysctl.d/kubernetes.conf<<EOF
@@ -91,19 +87,21 @@ EO
 
 4. Firewalld package should be installed in AWS Ubuntu OS, and Disabled.
    
-
-   Sudo systemctl status firewalld
-   Sudo systemctl stop firewalld
+   install the package firewalld
+   yum install firewalld -y 
+   
+   systemctl status firewalld
+   systemctl start firewalld
 
 5. SWAP memory will not support for K8, because cache memory will not required.
 
-   sudo Free -m
-   sudo Swappoff -a
+   free -m
+   swappoff -a
 
 6. SeLinux is disabled 
-   sudo Sestatus
-   sudo setenforce 0
-   sudo Sestatus
+   sestatus
+   setenforce 0
+   sestatus
 
 # setenforce 0
 # sed -i --follow-symlinks 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/sysconfig/selinux
@@ -190,6 +188,6 @@ Only in Master node-Run the following commands and network add ons plugins in ma
    
    
    
-   
+   kubeadm init --apiserver-advertise-address=10.46.176.28 --pod-network-cidr=192.168.1.0/16
    https://phoenixnap.com/kb/how-to-install-kubernetes-on-centos
    https://www.tecmint.com/install-kubernetes-cluster-on-centos-7/
