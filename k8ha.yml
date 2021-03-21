@@ -2,6 +2,22 @@ yum install haproxy -y
 systemctl start haproxy
 
 cd /etc/haproxy/haproxy.cfg
+add these two paragraphs
+
+frontend kubernetes-frontend
+   bind 172.31.38.170:6443
+   mode tcp
+   option tcplog
+   default_backend kuberenetes-backend
+
+
+backend kuberenetes-backend
+    mode tcp
+    option tcp-check
+    balance roundrobin
+    server k8master1 172.31.46.7:6443 check fall 3 rise 2
+    server k8master2 172.31.33.242:6443 check fall 3 rise 2
+    server k8master3 172.31.34.242:6443 check fall 3 rise 2
 
 
 
