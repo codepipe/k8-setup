@@ -1,0 +1,9 @@
+yum install haproxy -y
+systemctl start haproxy
+
+cd /etc/haproxy/haproxy.cfg
+
+
+
+
+kubeadm init --control-plane-endpoint="ha node ip":6443 --upload-certs --apiserver-advertise-address="masternodeip" --pod-network-cidr=192.168.0.0/16
