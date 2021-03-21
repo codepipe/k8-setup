@@ -20,6 +20,18 @@ backend kuberenetes-backend
     server k8master3 172.31.34.242:6443 check fall 3 rise 2
 
 
+Here we are having 3 master nodes 
+
+run below command in master node1
+
+note: kubeadm init --control-plane-endpoint="ha node ip":6443 --upload-certs --apiserver-advertise-address="masternodeip" --pod-network-cidr=192.168.0.0/16
 
 
-kubeadm init --control-plane-endpoint="ha node ip":6443 --upload-certs --apiserver-advertise-address="masternodeip" --pod-network-cidr=192.168.0.0/16
+run below command in master node2
+note: 
+kubeadm join "ha node ip":6443 --token lkmf0x.4ltqyerbpztykeua --discovery-token-ca-cert-hash sha256:9a94a7f2bcf2f18ef21359aff87f8183222ae7e877c5091d6c942bc50166d4d7 --control-plane --certificate-key e4e95bd5687e2de2b923b6789ede4274910e83793a44b800d9de6fd791f496f1  --apiserver-advertise-address="masternode2 ip"
+
+
+run below command in master node3
+note:
+kubeadm join "ha node ip":6443 --token lkmf0x.4ltqyerbpztykeua --discovery-token-ca-cert-hash sha256:9a94a7f2bcf2f18ef21359aff87f8183222ae7e877c5091d6c942bc50166d4d7 --control-plane --certificate-key e4e95bd5687e2de2b923b6789ede4274910e83793a44b800d9de6fd791f496f1  --apiserver-advertise-address="masternode3"
