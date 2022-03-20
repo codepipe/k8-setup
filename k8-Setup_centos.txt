@@ -1,4 +1,4 @@
-
+https://medium.com/containerum/4-ways-to-bootstrap-a-kubernetes-cluster-de0d5150a1e4
   
 Steps to setup K8-cluster in centos Flavour (combination of worker nodes and master node is called as Kubernetes cluster)
 ========================================================================================================================
