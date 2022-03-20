@@ -1,0 +1,134 @@
+Docker installation link
+Note: Dont use the command yum install docker -y (this is the oldest version of the docker ) 
+please follow the link to download the docker
+
+https://docs.docker.com/engine/install/rhel/
+
+
+If already installed docker remove with the following command
+sudo yum remove docker \
+                  docker-client \
+                  docker-client-latest \
+                  docker-common \
+                  docker-latest \
+                  docker-latest-logrotate \
+                  docker-logrotate \
+                  docker-engine \
+                  podman \
+                  runc
+                  
+                  
+                  
+Installation steps:
+[===================]
+ sudo yum install -y yum-utils
+ sudo yum-config-manager \
+    --add-repo \
+    https://download.docker.com/linux/rhel/docker-ce.repo
+    
+sudo yum install docker-ce docker-ce-cli containerd.io
+if , gets any error edit the file in docker-ce.repo file in  /etc/yum.repos.d/docker-ce.repo
+
+follow the link
+https://access.redhat.com/discussions/6249651
+
+only this should be added , remove all the contents
+
+[docker-ce-stable]
+name=Docker CE Stable - $basearch
+baseurl=https://download.docker.com/linux/centos/$releasever/$basearch/stable
+enabled=1
+gpgcheck=1
+gpgkey=https://download.docker.com/linux/centos/gpg
+
+
+then start and enable the docker 
+
+systemctl start docker && systemctl enable docker
+
+then set the kubernetes repo
+=====================
+cat <<EOF | sudo tee /etc/yum.repos.d/kubernetes.repo
+[kubernetes]
+name=Kubernetes
+baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-\$basearch
+enabled=1
+gpgcheck=1
+repo_gpgcheck=1
+gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+exclude=kubelet kubeadm kubectl
+EOF
+===============================================
+
+sudo yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
+
+sudo systemctl enable --now kubelet
+
+then next run the command 
+
+kubeadm init --apiserver-advertise-address 172.31.16.137 --pod-network-cidr=192.168.0.0/16
+
+if any error comes
+https://stackoverflow.com/questions/54728254/kubernetes-kubeadm-init-fails-due-to-dial-tcp-127-0-0-110248-connect-connecti
+follow the link
+change only the dameon.json , means add a new file
+
+add the contets in  a file 
+
+sudo mkdir /etc/docker
+cat <<EOF | sudo tee /etc/docker/daemon.json
+{
+  "exec-opts": ["native.cgroupdriver=systemd"],
+  "log-driver": "json-file",
+  "log-opts": {
+    "max-size": "100m"
+  },
+  "storage-driver": "overlay2"
+}
+EOF
+sudo systemctl enable docker
+sudo systemctl daemon-reload
+sudo systemctl restart docker
+sudo kubeadm reset
+sudo kubeadm init
+
+then run this 
+kubeadm init --apiserver-advertise-address 172.31.16.137 --pod-network-cidr=192.168.0.0/16
+
+
+succesfully it gives the follwing details
+
+==============================================================================================
+Your Kubernetes control-plane has initialized successfully!
+
+To start using your cluster, you need to run the following as a regular user:
+
+  mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+Alternatively, if you are the root user, you can run:
+
+  export KUBECONFIG=/etc/kubernetes/admin.conf
+
+You should now deploy a pod network to the cluster.
+Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
+  https://kubernetes.io/docs/concepts/cluster-administration/addons/
+
+Then you can join any number of worker nodes by running the following on each as root:
+
+kubeadm join 172.31.16.137:6443 --token dobom7.z4be99xh7zevdq6p \
+        --discovery-token-ca-cert-hash sha256:ea534ddbe18c6ac3126a11d6808d23326c95590cdaf179307ad979592c2a7863
+        
+        ======================================================================================================
+
+
+
+
+
+
+
+
+
+
+
